@@ -13,7 +13,6 @@ class Product:
             np.  x0129, AB12, ab123"""
     def __init__(self, name: str, price: float):
         """Metoda inicjalizująca"""
-
         # Sprawdzenie, czy podane dane do metody init są odpowiedniego typu
         if isinstance(name, str) and isinstance(price, float):
             self.name = name
@@ -42,7 +41,7 @@ class Product:
         return hash(self.name) ^ hash(self.price)
 
 #PYTANIE1 Co jak produkty mają takie same nazwy ale różne ceny? - Chyba kompetencje serwera
-
+#metoda powinna wtedy powiedzieć że są to 2 różne produkty
 
 
 class TooManyProductsFoundError(Exception):
@@ -61,7 +60,59 @@ class TooManyProductsFoundError(Exception):
 #   (2) możliwość odwołania się do atrybutu klasowego `n_max_returned_entries` (typu int) wyrażający maksymalną dopuszczalną liczbę wyników wyszukiwania,
 #   (3) możliwość odwołania się do metody `get_entries(self, n_letters)` zwracającą listę produktów spełniających kryterium wyszukiwania
 
-def sort_list(list_to_sort: List[Product]): # funkcja która sortuje liste produktów
+
+class Server(ABC):
+    n_max_returned_entries = [3, 7]  # atrybut klasowy
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+    @abstractmethod
+    def search_in_catalog(self, n_letters) -> list[Product]:
+        pass
+
+
+class ListServer(Server):
+    def __init__(self, list_obj: list[Product], *args, **kwargs) -> None: # metoda który zaninicjalizuje serwer listowy
+        super().__init__(*args, **kwargs)
+
+        if isinstance(list_obj, list):
+            self.list_obj = list_obj
+        else:
+            raise ValueError("Przekazano nieodpowiedni parametr do inicjalizacji obiektu MapServer")
+
+    def search_in_catalog(self, n_letters) -> list[Product]:
+        return find_product(self.list_obj, n_letters)
+
+
+class MapServer(Server):
+
+    def __init__(self, list_obj: list[Product], *args, **kwargs) -> None: # metoda inicjalizująca serwer słownikowy
+        super().__init__(*args, **kwargs)
+
+        if isinstance(list_obj, list):
+            self.dict_obj = {product_.name: product_ for product_ in list_obj} # dict comprehension
+        else:
+            raise ValueError("Przekazano nieodpowiedni parametr do inicjalizacji obiektu MapServer")
+
+    def search_in_catalog(self, n_letters) -> list[Product]:
+        return find_product(list(self.dict_obj.values()), n_letters)  # Tworzenie listy produktów na podstawie słownika
+
+
+
+class Client:
+    # FIXME: klasa powinna posiadać metodę inicjalizacyjną przyjmującą obiekt reprezentujący serwer
+    def __init__(self, serwer):
+        self.serwer = serwer
+        # przy inicjalizacji podajemy serwer w którym szukamy produktów
+
+    def get_total_price(self, n_letters: Optional[int]) -> Optional[float]:
+        # pobiera nazwy obiektów, wyszukuje w serwerze, zbiera cene
+        raise NotImplementedError()
+
+
+
+def sort_list(list_to_sort: List[Product]) -> None: # funkcja która sortuje liste produktów
     change = 0
     out = True
     j = 1
@@ -77,19 +128,21 @@ def sort_list(list_to_sort: List[Product]): # funkcja która sortuje liste produ
             out = False
 
 
-def valid_founder_list(list_to_validate: List[Product]): # funkcja która odrzuca niepoprawne listy produktów
+def valid_founder_list(list_to_validate: List[Product]) -> list[Product]: # funkcja która odrzuca niepoprawne listy produktów
     if not list_to_validate: # jeżeli lista jest pusta
         return list_to_validate
+    elif Server.n_max_returned_entries[0] > len(list_to_validate): # sprawdzanie czy lista produktów jest odpowiedniej długości
+        return []
+    elif len(list_to_validate) > Server.n_max_returned_entries[1]:
+        raise TooManyProductsFoundError()
 
-    elif Server.n_max_returned_entries[0] <= len(list_to_validate) <= Server.n_max_returned_entries[1]: # sprawdzanie czy lista produktów jest odpowiedniej długości
-        sort_list(list_to_validate) # sortowanie listy rosnąco cenami
-        return list_to_validate
+    sort_list(list_to_validate) # sortowanie listy rosnąco cenami
+    return list_to_validate
 
-    raise TooManyProductsFoundError("Znaleziono nie odpowiednią liczbę produktów") # w każdym innym przypadku wywołaj wyjątek
 
 def find_product(list_to_find: List[Product], n_letters: int) -> List[Product]: # funkcja znajdująca produkty
 
-    if isinstance(n_letters, int) == False or n_letters <= 0:
+    if not isinstance(n_letters, int)  or n_letters <= 0:
         raise ValueError("Podano złą liczbę liter do wyszukania")
 
     found_product = []
@@ -100,53 +153,3 @@ def find_product(list_to_find: List[Product], n_letters: int) -> List[Product]: 
             found_product.append(product_)
 
     return valid_founder_list(found_product)
-
-
-class Server(ABC):
-    n_max_returned_entries = [3, 7]  # atrybut klasowy
-
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-    @abstractmethod
-    def search_in_catalog(self, n_letters):
-        pass
-
-
-class ListServer(Server):
-    def __init__(self, list_obj: list[Product], *args, **kwargs): # metoda który zaninicjalizuje serwer listowy
-        super().__init__(*args, **kwargs)
-
-        if isinstance(list_obj, list) or list_obj is not None or list_obj != []:
-            self.list_obj = list_obj
-        else:
-            raise ValueError("Przekazano nieodpowiedni parametr do inicjalizacji obiektu MapServer")
-
-    def search_in_catalog(self, n_letters):
-        return find_product(self.list_obj, n_letters)
-
-
-class MapServer(Server):
-
-    def __init__(self, list_obj: list[Product], *args, **kwargs): # metoda inicjalizująca serwer słownikowy
-        super().__init__(*args, **kwargs)
-
-        if isinstance(list_obj, list) or list_obj is not None or list_obj != []:
-            self.dict_obj = {product_.name: product_ for product_ in list_obj} # dict comprehension
-        else:
-            raise ValueError("Przekazano nieodpowiedni parametr do inicjalizacji obiektu MapServer")
-
-    def search_in_catalog(self, n_letters):
-        return find_product(list(self.dict_obj.values()), n_letters)  # Tworzenie listy produktów na podstawie słownika
-
-
-
-class Client:
-    # FIXME: klasa powinna posiadać metodę inicjalizacyjną przyjmującą obiekt reprezentujący serwer
-    def __init__(self, serwer):
-        self.serwer = serwer
-        # przy inicjalizacji podajemy serwer w którym szukamy produktów
-
-    def get_total_price(self, n_letters: Optional[int]) -> Optional[float]:
-        # pobiera nazwy obiektów, wyszukuje w serwerze, zbiera cene
-        raise NotImplementedError()
