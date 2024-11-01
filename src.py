@@ -5,20 +5,40 @@ from typing import Optional
 
 
 class Product:
-    # FIXME: klasa powinna posiadać metodę inicjalizacyjną przyjmującą argumenty wyrażające nazwę produktu (typu str) i jego cenę (typu float) -- w takiej kolejności -- i ustawiającą atrybuty `name` (typu str) oraz `price` (typu float)
+    """Klasa reprezentująca produkt: <ciąg_liter><ciąg_cyfr> : cena
+            np.  x0129, AB12, ab123"""
+    def __init__(self, name: str, price: float):
+        """Metoda inicjalizująca"""
 
-    def __init__(self, name, price):
-        self.name = name
-        self.price = price
-        # tutaj trzeba zadeklarować atrybty i dać odpowiednią walidacje
+        # Sprawdzenie, czy podane dane do metody init są odpowiedniego typu
+        if isinstance(name, str) and isinstance(price, float):
+            self.name = name
+            self.price = price
+
+        else:
+            # W przeciwnym wypadku wyrzuca ValueError
+            raise ValueError("Nawa musi być typu 'str', a cena 'float'")
 
     def __eq__(self, other):
-        # metoda powinna porównywać 2 produkty(obiekty)
-        return None  # FIXME: zwróć odpowiednią wartość
+        """Metoa __eq__ porównuje dwie instancje klasy. W tym przypadku sprawdza czy mają taką samą nazwę i cenę."""
+
+        if isinstance(other, Product):
+            return self.name == other.name and self.price == other.price
+
+        #Jeśli się różnią lub other nie jest instancją Product to zwraca False
+        return False
 
     def __hash__(self):
-        # to trzeba zmienić tak by działało
-        return hash((self.name, self.price))
+        """Gdy nadpisuje się __eq__ to dobrą praktyką jest nadpisanie __hash__.
+
+        Ta tworzy hash - ciąg liczb, który używany jest, gdy obiekt jest w set(), albo jest kluczem słownika
+        Poniższa definicja bierze hashe z atrybutów i wykonuje na nich bitowego XOR, generując unikalny hash dla
+        kombinacji title i pages. Wyprintujcie se z ciekawości hash(instacja_Product).
+        """
+        return hash(self.name) ^ hash(self.price)
+
+#PYTANIE1 Co jak produkty mają takie same nazwy ale różne ceny? - Chyba kompetencje serwera
+
 
 
 class TooManyProductsFoundError:
