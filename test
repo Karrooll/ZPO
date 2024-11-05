@@ -14,3 +14,4 @@ class First_test_sorted(unittest.TestCase):
         #funkcja sprawdza wyniki zwrócone 
         result = self.server.search_in_catalog(2)
         self.assertEqualresult, sorted((result, key=lambda x: x.price))
+#drugi test Czy przekroczenie maksymalnej liczby znalezionych produktów powoduje rzucenie wyjątku?
