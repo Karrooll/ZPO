@@ -103,9 +103,17 @@ class Client:
         # przy inicjalizacji podajemy serwer w którym szukamy produktów
 
     def get_total_price(self, n_letters: Optional[int]) -> Optional[float]:
-        # pobiera nazwy obiektów, wyszukuje w serwerze, zbiera cene
-        return self.serwer.get_entries(n_letters)
 
+        # pobiera nazwy obiektów, wyszukuje w serwerze, zbiera cene
+        try:
+            lista_produktow = self.serwer.get_entries(n_letters)
+        except (ValueError, TooManyProductsFoundError):
+            return None
+
+        if not lista_produktow:
+            return None
+
+        return sum([prod.price for prod in lista_produktow])
 
 
 def sort_list(list_to_sort: List[Product]) -> None: # funkcja która sortuje liste produktów
