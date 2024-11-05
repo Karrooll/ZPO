@@ -40,9 +40,6 @@ class Product:
         """
         return hash(self.name) ^ hash(self.price)
 
-#PYTANIE1 Co jak produkty mają takie same nazwy ale różne ceny? - Chyba kompetencje serwera
-#metoda powinna wtedy powiedzieć że są to 2 różne produkty
-
 
 class TooManyProductsFoundError(Exception):
     def __init__(self, msg:str = None) -> None:
@@ -68,7 +65,7 @@ class Server(ABC):
         super().__init__(*args, **kwargs)
 
     @abstractmethod
-    def search_in_catalog(self, n_letters) -> list[Product]:
+    def get_entries(self, n_letters=1) -> list[Product]:
         pass
 
 
@@ -81,7 +78,7 @@ class ListServer(Server):
         else:
             raise ValueError("Przekazano nieodpowiedni parametr do inicjalizacji obiektu MapServer")
 
-    def search_in_catalog(self, n_letters) -> list[Product]:
+    def get_entries(self, n_letters=1) -> list[Product]:
         return find_product(self.list_obj, n_letters)
 
 
@@ -95,7 +92,7 @@ class MapServer(Server):
         else:
             raise ValueError("Przekazano nieodpowiedni parametr do inicjalizacji obiektu MapServer")
 
-    def search_in_catalog(self, n_letters) -> list[Product]:
+    def get_entries(self, n_letters=1) -> list[Product]:
         return find_product(list(self.dict_obj.values()), n_letters)  # Tworzenie listy produktów na podstawie słownika
 
 
