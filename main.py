@@ -9,7 +9,7 @@ from src import (
 )
 products = [
             Product("A12", 29.99),
-            Product("xjkonim0129", 19.99),
+            Product("xd129", 19.99),
             Product("a123", 39.99),
             Product("123", 39.99),
             Product("C34", 24.99),
@@ -25,7 +25,6 @@ serv_list = ListServer(products)
 s = 'A'
 clinet = Client(serv_list)
 print(s.lower())
-lista = clinet.get_total_price()
+lista = clinet.get_total_price(1)
 
-for i in range(3):
-    print((lista[i]).name)
+print(lista)

@@ -102,7 +102,7 @@ class Client:
         self.serwer = serwer
         # przy inicjalizacji podajemy serwer w którym szukamy produktów
 
-    def get_total_price(self, n_letters: Optional[int]) -> Optional[float]:
+    def get_total_price(self, n_letters: Optional[int] = 1) -> Optional[float]:
 
         # pobiera nazwy obiektów, wyszukuje w serwerze, zbiera cene
         try:
