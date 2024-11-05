@@ -1,1 +1,16 @@
-
+import unittest
+from src import Product, TooManyProductsFoundError, ListServer, MapServer, Client
+#pierwszy test czy wyniki zwrócone przez serwer przechowujący dane w liście są poprawnie posortowane?
+class First_test_sorted(unittest.TestCase):
+    def test_corect_sorting():
+        self.products = [
+            Product("AB12", 25.00),
+            Product("CD345", 15.00),
+            Product("EF67", 10.00)
+        ]
+#przykładowe dane 
+    self.server = ListServer(self.products)
+    def test_result(self):
+        #funkcja sprawdza wyniki zwrócone 
+        result = self.server.search_in_catalog(2)
+        self.assertEqualresult, sorted((result, key=lambda x: x.price))
