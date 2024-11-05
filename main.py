@@ -8,14 +8,24 @@ from src import (
     find_product, Client
 )
 products = [
-            Product("AB12", 29.99),
-            Product("x0129", 19.99),
-            Product("ab123", 39.99),
-            Product("CD34", 24.99)
+            Product("A12", 29.99),
+            Product("xjkonim0129", 19.99),
+            Product("a123", 39.99),
+            Product("123", 39.99),
+            Product("C34", 24.99),
+            Product("l12", 29.99),
+            Product("o12", 29.99),
+            Product("w12", 29.99),
+            Product("v12", 29.99),
+            Product("x12", 29.99),
+
         ]
 
 serv_list = ListServer(products)
 s = 'A'
 clinet = Client(serv_list)
 print(s.lower())
-print(clinet.get_total_price(2))
+lista = clinet.get_total_price()
+
+for i in range(3):
+    print((lista[i]).name)
