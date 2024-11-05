@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from abc import ABCMeta
-from curses.ascii import isalpha
 from itertools import product
 from re import search
 from typing import Optional, List, Dict
@@ -105,7 +104,7 @@ class Client:
 
     def get_total_price(self, n_letters: Optional[int]) -> Optional[float]:
         # pobiera nazwy obiektów, wyszukuje w serwerze, zbiera cene
-        raise NotImplementedError()
+        return self.serwer.get_entries(n_letters)
 
 
 
@@ -128,8 +127,6 @@ def sort_list(list_to_sort: List[Product]) -> None: # funkcja która sortuje lis
 def valid_founder_list(list_to_validate: List[Product]) -> list[Product]: # funkcja która odrzuca niepoprawne listy produktów
     if not list_to_validate: # jeżeli lista jest pusta
         return list_to_validate
-    elif Server.n_max_returned_entries[0] > len(list_to_validate): # sprawdzanie czy lista produktów jest odpowiedniej długości
-        return []
     elif len(list_to_validate) > Server.n_max_returned_entries[1]:
         raise TooManyProductsFoundError()
 
@@ -142,10 +139,12 @@ def find_product(list_to_find: List[Product], n_letters: int) -> List[Product]: 
     if not isinstance(n_letters, int)  or n_letters <= 0:
         raise ValueError("Podano złą liczbę liter do wyszukania")
 
+    letters = ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
+    numbers = ('1','2','3','4','5','6','7','8','9','0')
     found_product = []
     for product_ in list_to_find:
-        counter_of_letter = sum(1 for sign in product_.name if sign.isalpha())  # sprawdzenie ile liter ma nazwa produktu
-        counter_of_number = sum(1 for sign in product_.name if sign.isdigit())  # sprawdzenie ile cyfr ma nazwa produktu
+        counter_of_letter = sum(1 for sign in product_.name if sign.lower() in letters)  # sprawdzenie ile liter ma nazwa produktu
+        counter_of_number = sum(1 for sign in product_.name if sign in numbers)  # sprawdzenie ile cyfr ma nazwa produktu
         if counter_of_letter == n_letters and (counter_of_number == 2 or counter_of_number == 3):
             found_product.append(product_)
 
