@@ -12,8 +12,8 @@ products = [
             Product("xd129", 19.99),
             Product("a123", 39.99),
             Product("123", 39.99),
-            Product("C34", 24.99),
-            Product("l12", 29.99),
+            Product("Ckh34", 24.99),
+            Product("llk12", 29.99),
             Product("o12", 29.99),
             Product("w12", 29.99),
             Product("v12", 29.99),
@@ -25,6 +25,6 @@ serv_list = ListServer(products)
 s = 'A'
 clinet = Client(serv_list)
 print(s.lower())
-lista = clinet.get_total_price(1)
+lista = clinet.get_total_price()
 
 print(lista)
