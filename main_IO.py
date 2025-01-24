@@ -1,10 +1,10 @@
 #include <cmath>
 #include <iostream>
-#include "package.hpp"
-#include "types.hpp"
-#include "storage_types.hpp"
-#include "helpers.hpp"
-#include "nodes.hpp"
+#include "package.hxx"
+#include "types.hxx"
+#include "storage_types.hxx"
+#include "helpers.hxx"
+#include "nodes.hxx"
 #include <map>
 #include <sstream>
 
